@@ -12,6 +12,12 @@ export async function initializeToolsAndClients(config: MCPServersConfig): Promi
 
     // Initialize clients
     for (const key in config.mcpServers) {
+        // Skip GitHub MCP server if GITHUB_PERSONAL_ACCESS_TOKEN is not defined
+        if (key === 'github' && !process.env.GITHUB_PERSONAL_ACCESS_TOKEN) {
+            console.log('Skipping GitHub MCP server initialization: GITHUB_PERSONAL_ACCESS_TOKEN is not defined');
+            continue;
+        }
+
         const params = config.mcpServers[key];
         const client = new Client(
             {

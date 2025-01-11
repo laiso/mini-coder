@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { CallToolResultSchema } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolResultSchema, McpError } from '@modelcontextprotocol/sdk/types.js';
 import { Command } from 'commander';
 import { initializeToolsAndClients } from './client-manager.js';
 import { MCPServersConfig } from './types.js';
@@ -78,6 +78,9 @@ For more information about tasks, you can read the documentation in the docs/ di
 
     let iterationCount = 0;
     while (currentToolUseBlock && iterationCount < maxIterations) {
+        if (currentToolUseBlock) {
+            console.log({ currentToolUseBlock });
+        }
         const { updatedMessages, continue: shouldContinue } = processMessages(conversationMessages, currentToolUseBlock);
         conversationMessages = updatedMessages;
         if (!shouldContinue) break;
@@ -87,13 +90,23 @@ For more information about tasks, you can read the documentation in the docs/ di
             throw new Error(`Tool server not found for tool ${currentToolUseBlock.name}`);
         }
 
-        const toolResult = await mcpClient.callTool(
-            {
-                name: currentToolUseBlock.name,
-                arguments: currentToolUseBlock.input as { [x: string]: unknown },
-            },
-            CallToolResultSchema,
-        );
+        let toolResult;
+        try {
+            toolResult = await mcpClient.callTool(
+                {
+                    name: currentToolUseBlock.name,
+                    arguments: currentToolUseBlock.input as { [x: string]: unknown },
+                },
+                CallToolResultSchema,
+            );
+        } catch (error) {
+            const mcpError = new McpError((error as any).code, (error as any).message, (error as any).data);
+            conversationMessages.push({
+                role: 'user',
+                content: `ToolUser: ${JSON.stringify(currentToolUseBlock)}, Error: ${mcpError.message}`,
+            });
+            continue;
+        }
 
         for (const resultContent of toolResult.content as any[]) {
             console.log('Tool Result:', resultContent.text.slice(0, 255));
@@ -118,9 +131,6 @@ For more information about tasks, you can read the documentation in the docs/ di
             return result.toolUseBlock;
         });
 
-        if (currentToolUseBlock) {
-            console.log({ currentToolUseBlock });
-        }
         iterationCount++;
     }
 
@@ -171,6 +181,20 @@ const serverConfiguration = {
             command: 'npx',
             args: ['-y', '@modelcontextprotocol/server-filesystem', projectRootDirectory],
         },
+        github: {
+            command: 'docker',
+            args: [
+                'run',
+                '-i',
+                '--rm',
+                '-e',
+                'GITHUB_PERSONAL_ACCESS_TOKEN',
+                'mcp/github'
+            ],
+            env: {
+                GITHUB_PERSONAL_ACCESS_TOKEN: process.env.GITHUB_PERSONAL_ACCESS_TOKEN || '',
+            },
+        }
     },
 };
 

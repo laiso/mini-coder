@@ -17,6 +17,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "latest",
     "@modelcontextprotocol/sdk": "latest",
+    "@modelcontextprotocol/server-filesystem": "^0.6.2",
     "commander": "latest"
   },
   "devDependencies": {
