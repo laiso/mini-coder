@@ -1,47 +1,19 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
-import Anthropic from '@anthropic-ai/sdk';
-import { MCPServersConfig } from './types.js';
+import { GitHubMCPServer } from './github-mcp-server.js';
 
-export async function initializeToolsAndClients(config: MCPServersConfig): Promise<{
-    allTools: Anthropic.Tool[],
-    toolServerMap: Map<string, Client>,
-}> {
-    let allTools: Anthropic.Tool[] = [];
-    const toolServerMap = new Map();
+export class ClientManager {
+  private clients: Client[] = [];
 
-    // Initialize clients
-    for (const key in config.mcpServers) {
-        const params = config.mcpServers[key];
-        const client = new Client(
-            {
-                name: "mini-coder",
-                version: '0.1.0',
-            },
-            {
-                capabilities: {
-                    sampling: {},
-                },
-            },
-        );
-
-        await client.connect(new StdioClientTransport(params));
-
-        const toolList = await client.listTools();
-        const tools = toolList.tools.map((tool) => {
-            if (toolServerMap.has(tool.name)) {
-                console.warn(`Warning: Tool name "${tool.name}" is already registered. Overwriting previous registration.`);
-            }
-            toolServerMap.set(tool.name, client);
-            return {
-                name: tool.name,
-                description: tool.description,
-                input_schema: tool.inputSchema,
-            };
-        });
-
-        allTools = allTools.concat(tools);
+  async initialize() {
+    // GitHub MCPサーバーは GITHUB_PERSONAL_ACCESS_TOKEN が定義されている場合のみ追加
+    if (process.env.GITHUB_PERSONAL_ACCESS_TOKEN) {
+      const githubMCPServer = new GitHubMCPServer();
+      await githubMCPServer.initialize();
+      this.clients.push(githubMCPServer);
     }
+  }
 
-    return { allTools, toolServerMap };
+  getClients(): Client[] {
+    return this.clients;
+  }
 }
