@@ -1,0 +1,27 @@
+{
+  "name": "mini-coder",
+  "version": "0.1.0",
+  "main": "dist/cli.js",
+  "bin": {
+    "mini-coder": "./dist/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --project tsconfig.json",
+    "start": "node ./dist/cli.js"
+  },
+  "author": "laiso",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest",
+    "@modelcontextprotocol/sdk": "latest",
+    "commander": "latest"
+  },
+  "devDependencies": {
+    "tsx": "latest",
+    "@types/node": "latest",
+    "typescript": "latest"
+  }
+}
