@@ -147,6 +147,17 @@ if (!fs.existsSync(projectRootDirectory) || !fs.statSync(projectRootDirectory).i
     process.exit(1);
 }
 
+if (!options.instruction) {
+    console.error('Error: Instruction file path is required');
+    process.exit(1);
+}
+
+const instructionFilePath = path.resolve(options.instruction);
+if (!fs.existsSync(instructionFilePath) || !fs.statSync(instructionFilePath).isFile()) {
+    console.error(`Error: ${instructionFilePath} is not a valid file`);
+    process.exit(1);
+}
+
 // Verify entry point file exists if provided
 const entryPoint = options.entry ? path.resolve(options.entry) : undefined;
 if (entryPoint && (!fs.existsSync(entryPoint) || !fs.statSync(entryPoint).isFile())) {
@@ -176,4 +187,4 @@ try {
     process.exit(1);
 }
 
-main(initialInstruction, projectRootDirectory, serverConfiguration, 10);
+export default main(initialInstruction, projectRootDirectory, serverConfiguration, 10);
