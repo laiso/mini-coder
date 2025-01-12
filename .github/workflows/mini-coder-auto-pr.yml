@@ -21,4 +21,4 @@ jobs:
 
       - name: Run mini-coder
         run: |
-          node dist/cli.js -i "${{ github.event.issue.body }}" -e README.md -p ./
+          node dist/cli.js -i "${{ github.event.issue.title }}: ${{ github.event.issue.body }}" -e README.md -p ./
