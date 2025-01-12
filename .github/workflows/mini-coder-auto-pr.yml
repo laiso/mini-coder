@@ -15,8 +15,10 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm run build
 
       - name: Run mini-coder
         run: |
-          # pass
+          node dist/cli.js -i "${{ github.event.issue.body }}" -e README.md -p ./

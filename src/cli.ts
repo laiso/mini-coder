@@ -162,11 +162,14 @@ if (!options.instruction) {
     process.exit(1);
 }
 
-const instructionFilePath = path.resolve(options.instruction);
-if (!fs.existsSync(instructionFilePath) || !fs.statSync(instructionFilePath).isFile()) {
-    console.error(`Error: ${instructionFilePath} is not a valid file`);
-    process.exit(1);
+let instruction = '';
+if (fs.existsSync(options.instruction) && fs.statSync(options.instruction).isFile()) {
+    const instructionFilePath = path.resolve(options.instruction);
+    instruction = fs.readFileSync(instructionFilePath, 'utf-8');
+} else {
+    instruction = options.instruction.trim();
 }
+console.log('Instruction:', instruction.slice(0, 255));
 
 // Verify entry point file exists if provided
 const entryPoint = options.entry ? path.resolve(options.entry) : undefined;
@@ -200,7 +203,6 @@ const serverConfiguration = {
 
 let initialInstruction = '';
 try {
-    const instruction = fs.readFileSync(path.resolve(options.instruction), 'utf-8');
     initialInstruction = `
         entry point: ${entryPoint || 'N/A'}
         ===
