@@ -27,6 +27,7 @@ jobs:
 
       - name: Run mini-coder
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GITHUB_PERSONAL_ACCESS_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           node dist/cli.js -i "${{ github.event.issue.title }}: ${{ github.event.issue.body }}" -e README.md -p ./
