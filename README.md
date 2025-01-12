@@ -81,3 +81,15 @@ The CLI performs these validations:
 The tool automatically configures an MCP filesystem server pointing to the specified project directory for file access.
 
 If any validation fails, the program will exit with an error message explaining the issue.
+
+## Testing
+
+### Step 1: Create an Issue
+1. Open the GitHub issue create page: [New Issue](https://github.com/laiso/mini-coder/issues/new)
+2. Add the following details in the issue body to report the design:
+
+### Step 2: Implement the Design
+1. Once the issue is created, start working on the design implementation.
+2. Reference the issue number in the commit messages to link the implementation with the issue.
+
+Make sure to review and merge the design implementation into the main branch and close the issue once the implementation is merged.
