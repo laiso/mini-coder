@@ -204,7 +204,8 @@ const serverConfiguration = {
 let initialInstruction = '';
 try {
     initialInstruction = `
-        entry point: ${entryPoint || 'N/A'}
+        ENTRY_POINT: ${entryPoint || 'N/A'}
+        GITHUB_REPOSITORY: ${process.env.GITHUB_REPOSITORY || 'N/A'}
         ===
         ${instruction}
         `;
