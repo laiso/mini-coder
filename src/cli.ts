@@ -201,11 +201,18 @@ const serverConfiguration = {
     },
 };
 
+const eventPayload = process.env.GITHUB_EVENT_PATH
+    ? JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'))
+    : {};
+
+const issueNumber = eventPayload?.issue?.number || 'N/A';
+
 let initialInstruction = '';
 try {
     initialInstruction = `
         ENTRY_POINT: ${entryPoint || 'N/A'}
         GITHUB_REPOSITORY: ${process.env.GITHUB_REPOSITORY || 'N/A'}
+        GITHUB_ISSUE_NUMBER: ${issueNumber}
         ===
         ${instruction}
         `;
