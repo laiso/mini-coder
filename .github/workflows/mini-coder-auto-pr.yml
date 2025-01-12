@@ -1,7 +1,7 @@
 name: mini-coder-auto-pr
 on:
   issues:
-    types: [opened]
+    types: [opened, edited]
 jobs:
   build:
     runs-on: ubuntu-latest
