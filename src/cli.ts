@@ -140,6 +140,7 @@ For more information about tasks, you can read the documentation in the docs/ di
         await client.close();
         console.log('Closed.');
     }
+    process.exit(0);
 }
 
 const program = new Command();
