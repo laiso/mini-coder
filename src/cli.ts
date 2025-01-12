@@ -78,6 +78,7 @@ For more information about tasks, you can read the documentation in the docs/ di
 
     let iterationCount = 0;
     while (currentToolUseBlock && iterationCount < maxIterations) {
+        iterationCount++;
         if (currentToolUseBlock) {
             console.log({ currentToolUseBlock });
         }
@@ -100,11 +101,13 @@ For more information about tasks, you can read the documentation in the docs/ di
                 CallToolResultSchema,
             );
         } catch (error) {
+            console.error('Error calling tool:', error);
             const mcpError = new McpError((error as any).code, (error as any).message, (error as any).data);
             conversationMessages.push({
                 role: 'user',
                 content: `ToolUser: ${JSON.stringify(currentToolUseBlock)}, Error: ${mcpError.message}`,
             });
+            currentToolUseBlock = undefined;
             continue;
         }
 
@@ -130,8 +133,6 @@ For more information about tasks, you can read the documentation in the docs/ di
             conversationMessages = result.messages;
             return result.toolUseBlock;
         });
-
-        iterationCount++;
     }
 
     const mcpClients = new Set(toolServerMap.values());
